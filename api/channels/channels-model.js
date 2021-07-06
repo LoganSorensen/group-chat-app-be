@@ -10,24 +10,24 @@ module.exports = {
 }
 
 function getAll(){
-    return db('users')
-    .select("users.id", "users.email")
+    return db('channels')
+    .select("channels.id", "channels.channel_name", "channels.channel_description", "channels.owner_id")
 }
 
 function getById(id){
-    return db("users").where({id}).first();
+    return db("channels").where({id}).first();
 }
 
 function getBy(filter){
-    return db("users").where({filter})
+    return db("channels").where({filter})
 }
 
 function remove(id){
-    return db("users").where({id}).del()
+    return db("channels").where({id}).del()
 }
 
 function modify(id, changes){
-    return db("users")
+    return db("channels")
     .where({id})
     .update(changes)
     .then(()=>{
@@ -35,8 +35,7 @@ function modify(id, changes){
     })
 }
 
-async function add(user){
-    const [id] = await db("users").insert(user)
+async function add(channel){
+    const [id] = await db("channels").insert(channel)
     return findById(id)
 }
-
