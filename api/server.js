@@ -1,26 +1,38 @@
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
+const http = require('http')
+const socketio = require("socket.io");
 
 const usersRouter = require("./users/users-router");
 const channelsRouter = require("./channels/channels-router");
 const messagesRouter = require("./messages/messages-router");
 
-const server = express();
+const app = express();
+const server = http.createServer(app)
+const io = socketio(server);
 
-server.use(helmet());
-server.use(cors());
-server.use(express.json());
+app.use(helmet());
+app.use(cors());
+app.use(express.json());
 
-server.use("/api/users", usersRouter);
-server.use("/api/channels", channelsRouter);
-server.use("/api/messages", messagesRouter);
+io.on('connection', (socket) => {
+  console.log('We have a new connection!')
 
-server.get("/", (req, res) => {
+  socket.on('joinRoom', ({username, room}) => {
+    console.log(`${username} has joined ${room}`)
+  })
+})
+
+app.use("/api/users", usersRouter);
+app.use("/api/channels", channelsRouter);
+app.use("/api/messages", messagesRouter);
+
+app.get("/", (req, res) => {
   res.status(200).json({ message: process.env.MOTD });
 });
 
-server.use((err, req, res, next) => {
+app.use((err, req, res, next) => {
   res.status(err.status || 500).json({
     message: err.message,
     stack: err.stack,
