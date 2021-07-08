@@ -2,7 +2,7 @@ exports.up = function (knex) {
   return knex.schema
     .createTable("users", (user) => {
       user.increments("id");
-      user.string("email", 128).notNullable().unique();
+      user.string("username", 128).notNullable().unique();
       user.string("password", 128).notNullable();
       user.timestamp("created_at").defaultTo(knex.fn.now());
     })
@@ -22,7 +22,7 @@ exports.up = function (knex) {
     })
     .createTable("messages", (message) => {
       message.increments("id");
-      message.string("message_title").notNullable();
+      message.timestamp("created_at").defaultTo(knex.fn.now());
       message.text("message_text").notNullable();
       message
         .integer("user_id")

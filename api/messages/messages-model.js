@@ -11,7 +11,7 @@ module.exports = {
 
 function getAll(){
     return db('messages')
-    .select("messages.id", "messages.message_title", "messages.message_text", "messages.user_id", "messages.channel_id")
+    .select("messages.id", "messages.created_at", "messages.message_text", "messages.user_id", "messages.channel_id")
 }
 
 function getById(id){
