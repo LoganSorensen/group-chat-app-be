@@ -11,7 +11,7 @@ module.exports = {
 
 function getAll(){
     return db('users')
-    .select("users.id", "users.email")
+    .select("users.id", "users.username")
 }
 
 function getById(id){
