@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const Messages = require("./messages-model");
+const moment = require("moment");
 
 router.get("/", (req, res, next) => {
   Messages.getAll()
@@ -15,7 +16,16 @@ router.get("/:channel_id", (req, res, next) => {
 
   Messages.getBy({ channel_id })
     .then((messages) => {
-      res.status(200).json(messages);
+      const response = [];
+
+      messages.forEach((message) => {
+        response.push({
+          ...message,
+          // changes the time stamp to be relative to the current time
+          timestamp: moment(message.timestamp).calendar(),
+        });
+      });
+      res.status(200).json(response);
     })
     .catch(next);
 });

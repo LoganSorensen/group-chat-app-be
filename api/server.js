@@ -14,6 +14,7 @@ const {
   userLeave,
   getRoomUsers,
 } = require("../utils/users");
+const formatMessage = require("../utils/messages");
 
 const app = express();
 const server = http.createServer(app);
@@ -22,6 +23,8 @@ const io = socketio(server);
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+
+const botName = "admin";
 
 io.on("connection", (socket) => {
   console.log("We have a new connection!");
@@ -32,36 +35,36 @@ io.on("connection", (socket) => {
 
     const user = userJoin(socket.id, username, room);
 
-    socket.emit("message", {
-      user: "admin",
-      text: `${user.username} has joined ${user.room}!`,
-      timestamp: Date.now(),
-    });
+    socket.emit(
+      "message",
+      formatMessage(botName, `${user.username} has joined ${user.room}!`)
+    );
 
     socket.join(user.room);
   });
 
   // handles a user sending a message
   socket.on("chatMessage", (message) => {
-    console.log("message recieved");
+    // console.log("message recieved");
     const user = getCurrentUser(socket.id);
 
-    console.log(`sending ${message} to ${user.room}`);
+    // console.log(`sending ${message} to ${user.room}`);
 
-    // io.to(user.room).emit("message", message)
-    io.to(user.room).emit("message", {
-      user: user.username,
-      text: message,
-      timestamp: Date.now(),
-    });
+    io.to(user.room).emit("message", formatMessage(user.username, message));
   });
 
   // handles a client disconnecting
   socket.on("disconnect", () => {
+    console.log("user is leaving");
     const user = userLeave(socket.id);
 
+    console.log(user);
+
     if (user) {
-      io.to(user.room).emit("message", `${user.username} has left the chat`);
+      io.to(user.room).emit(
+        "message",
+        formatMessage(botName, `${user.username} has left the room.`)
+      );
 
       io.to(user.room).emit("roomUsers", {
         room: user.room,
