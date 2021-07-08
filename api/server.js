@@ -35,7 +35,7 @@ io.on("connection", (socket) => {
     socket.emit("message", {
       user: "admin",
       text: `${user.username} has joined ${user.room}!`,
-      time: Date.now(),
+      timestamp: Date.now(),
     });
 
     socket.join(user.room);
@@ -52,7 +52,7 @@ io.on("connection", (socket) => {
     io.to(user.room).emit("message", {
       user: user.username,
       text: message,
-      time: Date.now(),
+      timestamp: Date.now(),
     });
   });
 
