@@ -7,22 +7,22 @@ exports.seed = function (knex) {
       return knex("users").insert([
         {
           id: 1,
-          email: "test1@123.com",
+          username: "test1",
           password: "1234",
         },
         {
           id: 2,
-          email: "test2@123.com",
+          username: "test2",
           password: "1234",
         },
         {
           id: 3,
-          email: "test3@123.com",
+          username: "test3",
           password: "1234",
         },
         {
           id: 4,
-          email: "test4@123.com",
+          username: "test4",
           password: "1234",
         },
       ]);
