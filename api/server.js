@@ -1,26 +1,90 @@
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
+const http = require("http");
+const socketio = require("socket.io");
 
 const usersRouter = require("./users/users-router");
 const channelsRouter = require("./channels/channels-router");
 const messagesRouter = require("./messages/messages-router");
 
-const server = express();
+const {
+  userJoin,
+  getCurrentUser,
+  userLeave,
+  getRoomUsers,
+} = require("../utils/users");
+const formatMessage = require("../utils/messages");
 
-server.use(helmet());
-server.use(cors());
-server.use(express.json());
+const app = express();
+const server = http.createServer(app);
+const io = socketio(server);
 
-server.use("/api/users", usersRouter);
-server.use("/api/channels", channelsRouter);
-server.use("/api/messages", messagesRouter);
+app.use(helmet());
+app.use(cors());
+app.use(express.json());
 
-server.get("/", (req, res) => {
+const botName = "admin";
+
+io.on("connection", (socket) => {
+  console.log("We have a new connection!");
+
+  // handles a user joining the room
+  socket.on("joinRoom", ({ username, room }) => {
+    console.log(`${username} has joined ${room}\n`);
+
+    const user = userJoin(socket.id, username, room);
+
+    socket.join(user.room);
+
+    socket.emit(
+      "message",
+      formatMessage(botName, `${user.username} has joined ${user.room}!`)
+    );
+
+    // Send users and room info
+    io.to(user.room).emit('roomData', {
+      room: user.room,
+      users: getRoomUsers(user.room)
+    })
+
+  });
+
+  // handles a user sending a message
+  socket.on("chatMessage", (message) => {
+    const user = getCurrentUser(socket.id);
+
+    io.to(user.room).emit("message", formatMessage(user.username, message));
+  });
+
+  // handles a client disconnecting
+  socket.on("disconnect", () => {
+    const user = userLeave(socket.id);
+    console.log(`${user.username} has left the room.`)
+
+    if (user) {
+      io.to(user.room).emit(
+        "message",
+        formatMessage(botName, `${user.username} has left the room.`)
+      );
+
+      io.to(user.room).emit("roomUsers", {
+        room: user.room,
+        users: getRoomUsers(user.room),
+      });
+    }
+  });
+});
+
+app.use("/api/users", usersRouter);
+app.use("/api/channels", channelsRouter);
+app.use("/api/messages", messagesRouter);
+
+app.get("/", (req, res) => {
   res.status(200).json({ message: process.env.MOTD });
 });
 
-server.use((err, req, res, next) => {
+app.use((err, req, res, next) => {
   res.status(err.status || 500).json({
     message: err.message,
     stack: err.stack,
