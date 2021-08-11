@@ -9,4 +9,13 @@ router.get("/", (req, res, next) => {
     .catch(next);
 });
 
+router.get("/:channelId", (req, res, next) => {
+  const id = req.params.channelId;
+  Channels.getById(id)
+    .then((channel) => {
+      res.status(200).json(channel);
+    })
+    .catch(next);
+});
+
 module.exports = router;
