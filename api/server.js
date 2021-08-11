@@ -31,10 +31,14 @@ io.on("connection", (socket) => {
   console.log("connection");
 
   // handles a user joining the room
-  socket.on("joinRoom", ({ username, channel }) => {
+  socket.on("joinRoom", ({ username, channel, previousChannel }) => {
     console.log(`${username} has joined ${channel}\n`);
 
     userJoin(socket.id, username, channel);
+
+    socket.leave(previousChannel)
+
+    console.log(`going from ${previousChannel} to ${channel}`)
 
     socket.join(channel);
 
@@ -58,7 +62,7 @@ io.on("connection", (socket) => {
   socket.on("chatMessage", (data) => {
     const user = getCurrentUser(socket.id);
 
-    console.log(`sending ${data.message} to ${data.channel}`);
+    console.log(`${user.username} is sending ${data.message} to ${data.channel}`);
     io.to(data.channel).emit(
       "message",
       formatMessage(user.username, data.message)
