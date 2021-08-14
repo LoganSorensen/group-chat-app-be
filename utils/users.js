@@ -4,9 +4,13 @@ const users = [];
 function userJoin(id, username, channel) {
   const user = { id, username, channel };
 
-  // console.log("user", user);
+  const matchingUser = users.filter((user) => user.username === username);
 
-  users.push(user);
+  if (matchingUser.length > 0) {
+    users.splice(users.indexOf(matchingUser[0]), 1, user);
+  } else {
+    users.push(user);
+  }
 
   return user;
 }

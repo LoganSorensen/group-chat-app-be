@@ -36,33 +36,20 @@ io.on("connection", (socket) => {
 
     userJoin(socket.id, username, channel);
 
-    socket.leave(previousChannel)
-
-    console.log(`going from ${previousChannel} to ${channel}`)
+    socket.leave(previousChannel);
 
     socket.join(channel);
 
-    // console.log(channel)
-
-    //   console.log('\nusers:', users)
-
-    //   socket.emit(
-    //     "message",
-    //     formatMessage(botName, `${user.username} has joined ${user.room}!`)
-    //   );
-
-    //   // Send users and room info
-    //   io.to(user.room).emit('roomData', {
-    //     room: user.room,
-    //     users: getRoomUsers(user.room)
-    //   })
+    io.emit("roomData", users);
   });
 
   // handles a user sending a message
   socket.on("chatMessage", (data) => {
     const user = getCurrentUser(socket.id);
 
-    console.log(`${user.username} is sending ${data.message} to ${data.channel}`);
+    console.log(
+      `${user.username} is sending ${data.message} to ${data.channel}`
+    );
     io.to(data.channel).emit(
       "message",
       formatMessage(user.username, data.message)
@@ -73,6 +60,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     userLeave(socket.id);
     console.log("a user left\n");
+    io.emit("roomData", users);
   });
 });
 
