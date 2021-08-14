@@ -19,6 +19,8 @@ const {
   users,
 } = require("../utils/users");
 const formatMessage = require("../utils/messages");
+const Channel = require("./channels/channels-model");
+const Message = require("./messages/messages-model");
 
 const app = express();
 const server = http.createServer(app);
@@ -47,9 +49,19 @@ io.on("connection", (socket) => {
   socket.on("chatMessage", (data) => {
     const user = getCurrentUser(socket.id);
 
-    console.log(
-      `${user.username} is sending ${data.message} to ${data.channel}`
-    );
+    // adds the incoming message to the database
+    Channel.getBy({ channel_name: data.channel })
+      .then((channel) => {
+        const dbMessage = {
+          message_text: data.message,
+          user_id: data.senderId,
+          channel_id: channel[0].id,
+        };
+
+        Message.add(dbMessage);
+      })
+      .catch((err) => console.log(err));
+
     io.to(data.channel).emit(
       "message",
       formatMessage(user.username, data.message)
