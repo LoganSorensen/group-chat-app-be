@@ -10,7 +10,7 @@ module.exports = {
 };
 
 function getAll() {
-  return db("users").select("users.id", "users.username");
+  return db("users").select("users.id", "users.username", "users.profileImg");
 }
 
 function getById(id) {
@@ -30,7 +30,11 @@ function modify(id, changes) {
     .where({ id })
     .update(changes)
     .then(() => {
-      return getById(id).select("users.id", "users.username");
+      return getById(id).select(
+        "users.id",
+        "users.username",
+        "users.profileImg"
+      );
     });
 }
 

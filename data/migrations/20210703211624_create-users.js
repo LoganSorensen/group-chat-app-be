@@ -5,20 +5,16 @@ exports.up = function (knex) {
       user.string("username", 128).notNullable().unique();
       user.string("password", 128).notNullable();
       user.timestamp("created_at").defaultTo(knex.fn.now());
+      user
+        .string("profileImg")
+        .defaultTo(
+          "https://lsorensen-image-uploader.herokuapp.com/uploads/image-1629025698417noAvatar.png"
+        );
     })
     .createTable("channels", (channel) => {
       channel.increments("id");
       channel.string("channel_name").notNullable().unique();
       channel.text("channel_description").notNullable();
-      channel
-        .integer("owner_id")
-        .notNullable()
-        .unique()
-        .unsigned()
-        .references("id")
-        .inTable("users")
-        .onUpdate("CASCADE")
-        .onDelete("CASCADE");
     })
     .createTable("messages", (message) => {
       message.increments("id");

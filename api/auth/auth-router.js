@@ -40,11 +40,15 @@ router.post("/register", (req, res) => {
           .then((user) => {
             console.log(user);
             const token = generateToken(user);
-            const { username, id } = user;
+            const { username, id, profileImg } = user;
 
             res
               .status(201)
-              .json({ message: "user added", user: { id, username }, token });
+              .json({
+                message: "user added",
+                user: { id, username, profileImg },
+                token,
+              });
           })
           .catch((err) => {
             console.log(err);
@@ -66,11 +70,11 @@ router.post("/login", (req, res) => {
     .then((user) => {
       if (user && bcrypt.compareSync(password, user.password)) {
         const token = generateToken(user);
-        const { username, id } = user;
+        const { username, id, profileImg } = user;
         res.status(200).json({
           message: `Welcome, ${user.username}!`,
           id,
-          user: { id, username },
+          user: { id, username, profileImg },
           token,
         });
       } else {
