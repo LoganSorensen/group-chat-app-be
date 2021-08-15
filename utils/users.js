@@ -1,8 +1,8 @@
 const users = [];
 
 // Add user to channel
-function userJoin(id, username, channel) {
-  const user = { id, username, channel };
+function userJoin(id, username, channel, profileImg) {
+  const user = { id, username, channel, profileImg };
 
   const matchingUser = users.filter((user) => user.username === username);
 

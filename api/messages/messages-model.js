@@ -10,12 +10,14 @@ module.exports = {
 };
 
 function getAll() {
-  return db("messages").select(
+  return db("messages").join("users", "messages.user_id", "users.id")
+  .select(
     "messages.id",
     "messages.created_at",
     "messages.message_text",
     "messages.user_id",
-    "messages.channel_id"
+    "messages.channel_id",
+    "users.profileImg"
   );
 }
 
@@ -29,6 +31,7 @@ function getBy(filter) {
     .join("users", "messages.user_id", "users.id")
     .select(
       "users.username as user",
+      "users.profileImg",
       "messages.id",
       "messages.created_at as timestamp",
       "messages.message_text as text",

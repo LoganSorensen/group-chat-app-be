@@ -33,10 +33,10 @@ io.on("connection", (socket) => {
   console.log("connection");
 
   // handles a user joining the room
-  socket.on("joinRoom", ({ username, channel, previousChannel }) => {
+  socket.on("joinRoom", ({ username, profileImg, channel, previousChannel }) => {
     console.log(`${username} has joined ${channel}\n`);
 
-    userJoin(socket.id, username, channel);
+    userJoin(socket.id, username, channel, profileImg);
 
     socket.leave(previousChannel);
 
@@ -64,7 +64,7 @@ io.on("connection", (socket) => {
 
     io.to(data.channel).emit(
       "message",
-      formatMessage(user.username, data.message)
+      formatMessage(user.username, user.profileImg, data.message)
     );
   });
 
