@@ -19,7 +19,7 @@ function getById(id){
 }
 
 function getBy(filter){
-    return db("channels").where({filter})
+    return db("channels").where(filter)
 }
 
 function remove(id){
@@ -31,11 +31,11 @@ function modify(id, changes){
     .where({id})
     .update(changes)
     .then(()=>{
-        return findById(id)
+        return getById(id)
     })
 }
 
 async function add(channel){
     const [id] = await db("channels").insert(channel)
-    return findById(id)
+    return getById(id)
 }
