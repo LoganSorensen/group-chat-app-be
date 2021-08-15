@@ -24,4 +24,33 @@ router.get("/:userId", (req, res, next) => {
     .catch(next);
 });
 
+// Update user info
+router.put("/:userId", (req, res, next) => {
+  const { userId } = req.params;
+  const { username } = req.body;
+
+  if (username) {
+    Users.getBy({ username })
+      .then((user) => {
+        if (user.length > 0) {
+          console.log("htiing");
+          res.status(409).json({ message: "Username already exists" });
+        } else {
+          Users.modify(userId, req.body)
+            .then((updatedUser) => {
+              res.status(200).json(updatedUser);
+            })
+            .catch((err) => console.log(err));
+        }
+      })
+      .catch((err) => console.log(err));
+  } else {
+    Users.modify(userId, req.body)
+      .then((updatedUser) => {
+        res.status(200).json(updatedUser);
+      })
+      .catch((err) => console.log(err));
+  }
+});
+
 module.exports = router;

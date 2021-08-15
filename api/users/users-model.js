@@ -30,7 +30,7 @@ function modify(id, changes) {
     .where({ id })
     .update(changes)
     .then(() => {
-      return findById(id);
+      return getById(id).select("users.id", "users.username");
     });
 }
 
