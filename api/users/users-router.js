@@ -32,8 +32,7 @@ router.put("/:userId", (req, res, next) => {
   if (username) {
     Users.getBy({ username })
       .then((user) => {
-        if (user.length > 0) {
-          console.log("htiing");
+        if (user.length > 0 && user[0].id != userId) {
           res.status(409).json({ message: "Username already exists" });
         } else {
           Users.modify(userId, req.body)
