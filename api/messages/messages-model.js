@@ -46,11 +46,11 @@ function modify(id, changes) {
     .where({ id })
     .update(changes)
     .then(() => {
-      return findById(id);
+      return getById(id);
     });
 }
 
 async function add(message) {
   const [id] = await db("messages").insert(message);
-  return findById(id);
+  return getById(id);
 }
