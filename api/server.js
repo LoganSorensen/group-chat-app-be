@@ -17,7 +17,7 @@ const app = express();
 const server = http.createServer(app);
 
 const io = require("socket.io")(server, {
-  cors: { origin: "https://lsorensen-group-chat-app.herokuapp.com" },
+  cors: { origin: "https://group-chat-app-fe.vercel.app" },
 });
 
 app.use(helmet());
@@ -38,14 +38,10 @@ app.use((req, res, next) => {
 });
 
 io.on("connection", (socket) => {
-  console.log("connection");
-
   // handles a user joining the room
   socket.on(
     "joinRoom",
     ({ username, profileImg, channel, previousChannel }) => {
-      console.log(`${username} has joined ${channel}\n`);
-
       userJoin(socket.id, username, channel, profileImg);
 
       socket.leave(previousChannel);
@@ -68,8 +64,6 @@ io.on("connection", (socket) => {
           user_id: data.senderId,
           channel_id: channel[0].id,
         };
-
-        console.log(dbMessage);
 
         Message.add(dbMessage);
       })

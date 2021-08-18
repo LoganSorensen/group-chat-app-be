@@ -38,7 +38,6 @@ router.post("/register", (req, res) => {
         // adding the user to the database
         Users.add(user)
           .then((user) => {
-            console.log(user);
             const token = generateToken(user);
             const { username, id, profileImg } = user;
 
