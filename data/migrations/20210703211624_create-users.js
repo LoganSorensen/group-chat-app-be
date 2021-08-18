@@ -5,11 +5,7 @@ exports.up = function (knex) {
       user.string("username", 128).notNullable().unique();
       user.string("password", 128).notNullable();
       user.timestamp("created_at").defaultTo(knex.fn.now());
-      user
-        .string("profileImg")
-        .defaultTo(
-          "https://lsorensen-image-uploader.herokuapp.com/uploads/image-1629264521567noAvatar.png"
-        );
+      user.string("profileImg").defaultTo(null);
     })
     .createTable("channels", (channel) => {
       channel.increments("id");
