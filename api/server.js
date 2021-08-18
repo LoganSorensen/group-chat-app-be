@@ -6,11 +6,6 @@ const io = require("socket.io")(8800, {
   cors: { origin: "http://localhost:3000" },
 });
 
-const usersRouter = require("./users/users-router");
-const channelsRouter = require("./channels/channels-router");
-const messagesRouter = require("./messages/messages-router");
-const authRouter = require("./auth/auth-router");
-
 const {
   userJoin,
   getCurrentUser,
@@ -29,21 +24,37 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  if (req.method === "OPTIONS") {
+    res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
+    return res.status(200).json({});
+  }
+  next();
+});
+
 io.on("connection", (socket) => {
   console.log("connection");
 
   // handles a user joining the room
-  socket.on("joinRoom", ({ username, profileImg, channel, previousChannel }) => {
-    console.log(`${username} has joined ${channel}\n`);
+  socket.on(
+    "joinRoom",
+    ({ username, profileImg, channel, previousChannel }) => {
+      console.log(`${username} has joined ${channel}\n`);
 
-    userJoin(socket.id, username, channel, profileImg);
+      userJoin(socket.id, username, channel, profileImg);
 
-    socket.leave(previousChannel);
+      socket.leave(previousChannel);
 
-    socket.join(channel);
+      socket.join(channel);
 
-    io.emit("roomData", users);
-  });
+      io.emit("roomData", users);
+    }
+  );
 
   // handles a user sending a message
   socket.on("chatMessage", (data) => {
@@ -76,13 +87,20 @@ io.on("connection", (socket) => {
   });
 });
 
+// Routers
+const usersRouter = require("./users/users-router");
+const channelsRouter = require("./channels/channels-router");
+const messagesRouter = require("./messages/messages-router");
+const authRouter = require("./auth/auth-router");
+
+// Routes
 app.use("/api/users", usersRouter);
 app.use("/api/channels", channelsRouter);
 app.use("/api/messages", messagesRouter);
 app.use("/api/auth", authRouter);
 
 app.get("/", (req, res) => {
-  res.status(200).json({ message: process.env.MOTD });
+  res.status(200).json({ message: process.env.MOTD || "api is up" });
 });
 
 app.use((err, req, res, next) => {

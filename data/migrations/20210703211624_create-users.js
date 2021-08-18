@@ -8,7 +8,7 @@ exports.up = function (knex) {
       user
         .string("profileImg")
         .defaultTo(
-          "https://lsorensen-image-uploader.herokuapp.com/uploads/image-1629116864009noAvatar.png"
+          "https://lsorensen-image-uploader.herokuapp.com/uploads/image-1629264521567noAvatar.png"
         );
     })
     .createTable("channels", (channel) => {
