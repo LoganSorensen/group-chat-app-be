@@ -42,13 +42,11 @@ router.post("/register", (req, res) => {
             const token = generateToken(user);
             const { username, id, profileImg } = user;
 
-            res
-              .status(201)
-              .json({
-                message: "user added",
-                user: { id, username, profileImg },
-                token,
-              });
+            res.status(201).json({
+              message: "user added",
+              user: { id, username, profileImg },
+              token,
+            });
           })
           .catch((err) => {
             console.log(err);

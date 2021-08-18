@@ -10,15 +10,16 @@ module.exports = {
 };
 
 function getAll() {
-  return db("messages").join("users", "messages.user_id", "users.id")
-  .select(
-    "messages.id",
-    "messages.created_at",
-    "messages.message_text",
-    "messages.user_id",
-    "messages.channel_id",
-    "users.profileImg"
-  );
+  return db("messages")
+    .join("users", "messages.user_id", "users.id")
+    .select(
+      "messages.id",
+      "messages.created_at",
+      "messages.message_text",
+      "messages.user_id",
+      "messages.channel_id",
+      "users.profileImg"
+    );
 }
 
 function getById(id) {
