@@ -2,15 +2,11 @@ const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
 const http = require("http");
-const io = require("socket.io")(8800, {
-  cors: { origin: "http://localhost:3000" },
-});
 
 const {
   userJoin,
   getCurrentUser,
   userLeave,
-  getRoomUsers,
   users,
 } = require("../utils/users");
 const formatMessage = require("../utils/messages");
@@ -19,6 +15,10 @@ const Message = require("./messages/messages-model");
 
 const app = express();
 const server = http.createServer(app);
+
+const io = require("socket.io")(server, {
+  cors: { origin: "http://localhost:3000" },
+});
 
 app.use(helmet());
 app.use(cors());
@@ -68,6 +68,8 @@ io.on("connection", (socket) => {
           user_id: data.senderId,
           channel_id: channel[0].id,
         };
+
+        console.log(dbMessage);
 
         Message.add(dbMessage);
       })
